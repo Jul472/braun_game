@@ -224,7 +224,8 @@ wss.on('connection', ws => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('Servidor corriendo en http://localhost:3000');
-  console.log('Panel del host en http://localhost:3000/host');
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Panel del host en http://localhost:${PORT}/host`);
 });
