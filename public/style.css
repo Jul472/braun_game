@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:            #05051e;
+  --primary:       #162d7a;
+  --primary-dark:  #0d1e57;
+  --accent:        #f4a200;
+  --accent-light:  #ffc940;
+  --text:          #ffffff;
+  --text-dim:      #8eaacc;
+  --strike:        #e53935;
+  --font-display:  'Bebas Neue', 'Impact', sans-serif;
+  --font-body:     'Nunito', 'Arial', sans-serif;
+  --radius:        12px;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}

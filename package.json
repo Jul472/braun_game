@@ -1,0 +1,13 @@
+{
+  "name": "que-diria-tu-mama",
+  "version": "1.0.0",
+  "description": "Family Feud-style party game — ¿Qué diría tu mamá?",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0"
+  }
+}

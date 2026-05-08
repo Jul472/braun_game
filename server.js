@@ -1,0 +1,230 @@
+const express = require('express');
+const http = require('http');
+const { WebSocketServer } = require('ws');
+const path = require('path');
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/host',   (_req, res) => res.sendFile(path.join(__dirname, 'public', 'host.html')));
+app.get('/podio',  (_req, res) => res.sendFile(path.join(__dirname, 'public', 'podium.html')));
+
+const QUESTIONS = [
+  {
+    id: 0,
+    question: '¿Qué dice una mamá cuando está enojada contigo?',
+    answers: [
+      { text: 'Espérate que lleguemos a la casa', points: 10 },
+      { text: 'Estoy muy decepcionada de ti', points: 9 },
+      { text: 'Porque no piensas antes de actuar', points: 8 },
+      { text: 'Mira lo que me hiciste hacer', points: 7 },
+      { text: 'A usted le falta es más juicio', points: 6 },
+      { text: 'Ya me tiene cansada', points: 5 },
+      { text: 'En esta casa no manda nadie', points: 4 },
+      { text: 'Usted no aprende sino a las malas', points: 3 },
+    ],
+  },
+  {
+    id: 1,
+    question: '¿Qué dice una mamá cuando tiene visitas en casa?',
+    answers: [
+      { text: 'Ofrezca algo de tomar', points: 10 },
+      { text: 'Salúde a la señora', points: 9 },
+      { text: 'No moleste que tenemos visita', points: 8 },
+      { text: 'Vaya y cámbiese esa ropa', points: 7 },
+      { text: 'Haga el favor y compórtese', points: 6 },
+      { text: 'No meta la cucharada en la conversación', points: 5 },
+      { text: 'Eso no se hace delante de la gente', points: 4 },
+      { text: 'Recoja ese tiradero antes de que lleguen', points: 3 },
+    ],
+  },
+  {
+    id: 2,
+    question: '¿Qué dice una mamá cuando llegas tarde a la casa?',
+    answers: [
+      { text: '¿A qué horas es esto de llegar?', points: 10 },
+      { text: 'Lo tenía rezando el rosario', points: 9 },
+      { text: '¿Por qué no llamó?', points: 8 },
+      { text: 'Con usted no se puede contar', points: 7 },
+      { text: 'Ese teléfono es de adorno', points: 6 },
+      { text: 'Se quedó sin salida el próximo mes', points: 5 },
+      { text: 'Mañana me cuenta el cuento', points: 4 },
+      { text: 'Aquí no es un hotel', points: 3 },
+    ],
+  },
+  {
+    id: 3,
+    question: '¿Qué dice una mamá cuando no quieres comer?',
+    answers: [
+      { text: 'Hay niños que se mueren de hambre', points: 10 },
+      { text: 'Coma o no hay postre', points: 9 },
+      { text: '¿Acaso le parece que soy su sirvienta?', points: 8 },
+      { text: 'Pruebe aunque sea un poquito', points: 7 },
+      { text: 'Si no come no crece', points: 6 },
+      { text: 'No me venga con cuentos', points: 5 },
+      { text: 'Eso le va a gustar, no sea mañoso', points: 4 },
+      { text: 'Eso le mueve el estómago', points: 3 },
+    ],
+  },
+  {
+    id: 4,
+    question: '¿Qué dice una mamá cuando pide algo y no lo haces de inmediato?',
+    answers: [
+      { text: '¿Cuántas veces le tengo que repetir?', points: 10 },
+      { text: 'Voy a contar hasta tres', points: 9 },
+      { text: 'No me haga perder la paciencia', points: 8 },
+      { text: '¿Qué espera, que le lloren los ojos?', points: 7 },
+      { text: '¡Ya!', points: 6 },
+      { text: 'Cuando yo era joven obedecía a la primera', points: 5 },
+      { text: 'Eso que hace es pereza pura', points: 4 },
+      { text: 'Se lo pido por las buenas o por las malas', points: 3 },
+    ],
+  },
+];
+
+function createInitialState() {
+  return {
+    questions: QUESTIONS,
+    currentQuestionIndex: 0,
+    revealedAnswers: [],
+    strikes: 0,
+    teams: [
+      { name: 'Equipo 1', score: 0 },
+      { name: 'Equipo 2', score: 0 },
+      { name: 'Equipo 3', score: 0 },
+      { name: 'Equipo 4', score: 0 },
+    ],
+    activeTeamIndex: 0,
+    celebration: false,
+    showPodium: false,
+  };
+}
+
+let gameState = createInitialState();
+let celebrationTimeout = null;
+
+function broadcast(data) {
+  const msg = JSON.stringify(data);
+  wss.clients.forEach(client => {
+    if (client.readyState === 1) client.send(msg);
+  });
+}
+
+function sendState() {
+  broadcast({ type: 'STATE_UPDATE', payload: gameState });
+}
+
+wss.on('connection', ws => {
+  ws.send(JSON.stringify({ type: 'STATE_UPDATE', payload: gameState }));
+
+  ws.on('message', raw => {
+    let msg;
+    try { msg = JSON.parse(raw); } catch { return; }
+
+    const q = QUESTIONS[gameState.currentQuestionIndex];
+
+    switch (msg.type) {
+      case 'REVEAL_ANSWER': {
+        const { answerIndex } = msg.payload;
+        if (answerIndex >= 0 && answerIndex < q.answers.length &&
+            !gameState.revealedAnswers.includes(answerIndex)) {
+          gameState.revealedAnswers = [...gameState.revealedAnswers, answerIndex];
+          gameState.teams[gameState.activeTeamIndex].score += q.answers[answerIndex].points;
+          if (gameState.revealedAnswers.length === q.answers.length) {
+            gameState.celebration = true;
+            if (celebrationTimeout) clearTimeout(celebrationTimeout);
+            celebrationTimeout = setTimeout(() => {
+              gameState.celebration = false;
+              sendState();
+            }, 5000);
+          }
+        }
+        break;
+      }
+      case 'ADD_STRIKE': {
+        if (gameState.strikes < 3) gameState.strikes++;
+        break;
+      }
+      case 'NEXT_TEAM': {
+        gameState.activeTeamIndex = (gameState.activeTeamIndex + 1) % gameState.teams.length;
+        gameState.strikes = 0;
+        break;
+      }
+      case 'SET_ACTIVE_TEAM': {
+        const { teamIndex } = msg.payload;
+        if (teamIndex >= 0 && teamIndex < gameState.teams.length) {
+          gameState.activeTeamIndex = teamIndex;
+          gameState.strikes = 0;
+        }
+        break;
+      }
+      case 'SET_QUESTION': {
+        const { questionId } = msg.payload;
+        if (questionId >= 0 && questionId < QUESTIONS.length) {
+          gameState.currentQuestionIndex = questionId;
+          gameState.revealedAnswers = [];
+          gameState.strikes = 0;
+          gameState.celebration = false;
+          if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
+        }
+        break;
+      }
+      case 'RESET_ROUND': {
+        gameState.revealedAnswers = [];
+        gameState.strikes = 0;
+        gameState.celebration = false;
+        if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
+        break;
+      }
+      case 'NEXT_QUESTION': {
+        gameState.currentQuestionIndex = (gameState.currentQuestionIndex + 1) % QUESTIONS.length;
+        gameState.revealedAnswers = [];
+        gameState.strikes = 0;
+        gameState.celebration = false;
+        if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
+        break;
+      }
+      case 'SET_TEAMS': {
+        const { teams } = msg.payload;
+        if (Array.isArray(teams)) {
+          gameState.teams = teams.slice(0, 4).map((t, i) => ({
+            name: (t.name || '').trim() || `Equipo ${i + 1}`,
+            score: gameState.teams[i]?.score ?? 0,
+          }));
+        }
+        break;
+      }
+      case 'ADJUST_SCORE': {
+        const { teamIndex, delta } = msg.payload;
+        if (teamIndex >= 0 && teamIndex < gameState.teams.length) {
+          gameState.teams[teamIndex].score = Math.max(0, gameState.teams[teamIndex].score + delta);
+        }
+        break;
+      }
+      case 'SHOW_PODIUM': {
+        gameState.showPodium = true;
+        break;
+      }
+      case 'HIDE_PODIUM': {
+        gameState.showPodium = false;
+        break;
+      }
+      case 'RESET_GAME': {
+        if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
+        const names = gameState.teams.map(t => t.name);
+        gameState = createInitialState();
+        gameState.teams = names.map((name, i) => ({ name, score: 0 }));
+        break;
+      }
+    }
+
+    sendState();
+  });
+});
+
+server.listen(3000, () => {
+  console.log('Servidor corriendo en http://localhost:3000');
+  console.log('Panel del host en http://localhost:3000/host');
+});

@@ -1,0 +1,209 @@
+body {
+  background: radial-gradient(ellipse at 50% 0%, #1a0a40 0%, #050515 70%);
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── Fireworks canvas ── */
+#fireworks-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Confetti ── */
+#confetti-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.conf-p {
+  position: absolute;
+  top: -60px;
+  animation: conf-fall linear forwards;
+  user-select: none;
+}
+
+@keyframes conf-fall {
+  to { transform: translateY(110vh) rotate(540deg); }
+}
+
+/* ── App ── */
+#app {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  padding: clamp(10px, 2vh, 24px) clamp(10px, 2vw, 40px) 0;
+  gap: clamp(4px, 1vh, 10px);
+}
+
+/* ── Title ── */
+#podium-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.5vw, 6.5rem);
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-align: center;
+  line-height: 1;
+  animation: title-glow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes title-glow {
+  from { text-shadow: 0 0 20px rgba(244,162,0,0.5), 0 0 60px rgba(244,162,0,0.2); }
+  to   { text-shadow: 0 0 40px rgba(244,162,0,0.9), 0 0 100px rgba(244,162,0,0.5), 0 0 160px rgba(244,162,0,0.2); }
+}
+
+#subtitle {
+  font-size: clamp(0.7rem, 1.4vw, 1.1rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ── Podium stage ── */
+#podium-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(6px, 1.5vw, 20px);
+  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  padding-bottom: 0;
+}
+
+/* ── Each podium column ── */
+.podium-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  animation: col-rise 0.9s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+@keyframes col-rise {
+  from { opacity: 0; transform: translateY(60px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger: 2nd=0.4s, 1st=0.1s, 3rd=0.7s — set via inline style */
+
+.podium-avatar {
+  font-size: clamp(2rem, 4vw, 4.5rem);
+  margin-bottom: clamp(4px, 0.5vh, 8px);
+  animation: bounce-avatar 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes bounce-avatar {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-8px) scale(1.08); }
+}
+
+.podium-team-name {
+  font-size: clamp(0.85rem, 1.8vw, 1.6rem);
+  font-weight: 900;
+  text-align: center;
+  max-width: clamp(100px, 18vw, 200px);
+  line-height: 1.1;
+  margin-bottom: clamp(2px, 0.3vh, 6px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.podium-team-score {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 3.2rem);
+  line-height: 1;
+  margin-bottom: clamp(4px, 0.5vh, 8px);
+}
+
+/* ── The physical block ── */
+.podium-block {
+  width: clamp(90px, 16vw, 200px);
+  border-radius: clamp(6px, 1vw, 12px) clamp(6px, 1vw, 12px) 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: clamp(8px, 1.2vh, 16px);
+  position: relative;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.2);
+}
+
+.podium-pos-num {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 6rem);
+  color: rgba(0,0,0,0.25);
+  line-height: 1;
+}
+
+/* ── 1st place specific ── */
+.col-1st .podium-team-name { color: #ffd700; }
+.col-1st .podium-team-score { color: #ffd700; }
+.col-1st .podium-block {
+  background: linear-gradient(160deg, #ffe566 0%, #f4a200 50%, #c07800 100%);
+  box-shadow:
+    0 0 40px rgba(244,162,0,0.6),
+    0 -6px 30px rgba(244,162,0,0.3),
+    inset 0 2px 0 rgba(255,255,255,0.35);
+}
+.col-1st .podium-avatar { filter: drop-shadow(0 0 12px rgba(244,162,0,0.8)); }
+
+/* ── 2nd place ── */
+.col-2nd .podium-team-name { color: #d0d8e8; }
+.col-2nd .podium-team-score { color: #d0d8e8; }
+.col-2nd .podium-block {
+  background: linear-gradient(160deg, #d8e0ee 0%, #9ba8bf 50%, #6e7e97 100%);
+  box-shadow: 0 -4px 20px rgba(155,168,191,0.3), inset 0 2px 0 rgba(255,255,255,0.3);
+}
+
+/* ── 3rd place ── */
+.col-3rd .podium-team-name { color: #e8c09a; }
+.col-3rd .podium-team-score { color: #e8c09a; }
+.col-3rd .podium-block {
+  background: linear-gradient(160deg, #e8a87c 0%, #cd7f32 50%, #8b5a1a 100%);
+  box-shadow: 0 -4px 20px rgba(205,127,50,0.3), inset 0 2px 0 rgba(255,255,255,0.25);
+}
+
+/* ── 4th place ── */
+#fourth-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: clamp(6px, 1.2vh, 14px) 0 clamp(8px, 1.5vh, 20px);
+  opacity: 0;
+  animation: col-rise 0.9s 1s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+.fourth-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 20px);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: clamp(8px, 1.2vh, 14px) clamp(14px, 2.5vw, 30px);
+}
+
+.fourth-medal  { font-size: clamp(1.5rem, 2.5vw, 2.5rem); }
+.fourth-pos    { font-size: clamp(0.7rem, 1vw, 0.95rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #6b7280; }
+.fourth-name   { font-size: clamp(0.95rem, 1.8vw, 1.6rem); font-weight: 800; color: #d1d5db; }
+.fourth-score  { font-family: var(--font-display); font-size: clamp(1.3rem, 2.5vw, 2.4rem); color: #9ca3af; }
+
+/* ── Tie label ── */
+.tie-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}

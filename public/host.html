@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host — ¿Qué diría tu mamá?</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="host.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Header -->
+    <div class="host-header">
+      <h1>Panel del Host</h1>
+      <div class="status-chips">
+        <div class="chip">
+          <span class="conn-dot" id="conn-dot" title="Desconectado"></span>
+          <span id="conn-label">Conectando…</span>
+        </div>
+        <div class="chip">Pregunta <strong id="status-question">—</strong></div>
+        <div class="chip">Turno <strong id="status-team">—</strong></div>
+        <div class="chip">Strikes <strong id="status-strikes">—</strong></div>
+        <div class="chip">Reveladas <strong id="status-revealed">—</strong></div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="host-grid">
+
+      <!-- Left: Question + Answers -->
+      <div class="host-main">
+
+        <section class="host-section">
+          <h2>Pregunta activa</h2>
+          <select id="question-select" data-built="false"></select>
+        </section>
+
+        <section class="host-section">
+          <h2>Respuestas</h2>
+          <div id="answers-list"></div>
+        </section>
+
+      </div>
+
+      <!-- Right: Controls + Teams + Setup -->
+      <div class="host-sidebar">
+
+        <section class="host-section">
+          <h2>Strikes</h2>
+          <div id="strikes-display" class="strikes-display"></div>
+          <button id="btn-strike" class="btn btn-strike">✕ Agregar Strike</button>
+        </section>
+
+        <section class="host-section">
+          <h2>Turno y Equipos</h2>
+          <div id="teams-list"></div>
+          <button id="btn-next-team" class="btn btn-team">Siguiente Equipo →</button>
+        </section>
+
+        <section class="host-section">
+          <h2>Control de Ronda</h2>
+          <button id="btn-reset-round"   class="btn btn-reset">↺ Reset Ronda</button>
+          <button id="btn-next-question" class="btn btn-next-q">Siguiente Pregunta →</button>
+          <button id="btn-reset-game"    class="btn btn-danger">⚠ Reset Juego Completo</button>
+        </section>
+
+        <section class="host-section">
+          <h2>Podio</h2>
+          <button id="btn-podio" class="btn btn-podio">🏆 Ver Podio Final</button>
+        </section>
+
+        <section class="host-section">
+          <h2>Nombres de Equipos</h2>
+          <div class="team-name-row">
+            <label>Equipo 1</label>
+            <input id="team-name-0" type="text" placeholder="Equipo 1" maxlength="20">
+          </div>
+          <div class="team-name-row">
+            <label>Equipo 2</label>
+            <input id="team-name-1" type="text" placeholder="Equipo 2" maxlength="20">
+          </div>
+          <div class="team-name-row">
+            <label>Equipo 3</label>
+            <input id="team-name-2" type="text" placeholder="Equipo 3" maxlength="20">
+          </div>
+          <div class="team-name-row">
+            <label>Equipo 4</label>
+            <input id="team-name-3" type="text" placeholder="Equipo 4" maxlength="20">
+          </div>
+          <button id="btn-apply-names" class="btn-apply">Aplicar Nombres</button>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script src="host.js"></script>
+</body>
+</html>
