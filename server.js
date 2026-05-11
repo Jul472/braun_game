@@ -17,13 +17,10 @@ const QUESTIONS = [
     question: '¿Qué dice una mamá cuando está enojada contigo?',
     answers: [
       { text: 'Espérate que lleguemos a la casa', points: 10 },
-      { text: 'Estoy muy decepcionada de ti', points: 9 },
-      { text: 'Porque no piensas antes de actuar', points: 8 },
-      { text: 'Mira lo que me hiciste hacer', points: 7 },
-      { text: 'A usted le falta es más juicio', points: 6 },
-      { text: 'Ya me tiene cansada', points: 5 },
-      { text: 'En esta casa no manda nadie', points: 4 },
-      { text: 'Usted no aprende sino a las malas', points: 3 },
+      { text: 'Estoy muy decepcionada de ti', points: 8 },
+      { text: 'Porque no piensas antes de actuar', points: 6 },
+      { text: 'Mira lo que me hiciste hacer', points: 4 },
+      { text: 'A usted le falta es más juicio', points: 2 },
     ],
   },
   {
@@ -31,13 +28,10 @@ const QUESTIONS = [
     question: '¿Qué dice una mamá cuando tiene visitas en casa?',
     answers: [
       { text: 'Ofrezca algo de tomar', points: 10 },
-      { text: 'Salúde a la señora', points: 9 },
-      { text: 'No moleste que tenemos visita', points: 8 },
-      { text: 'Vaya y cámbiese esa ropa', points: 7 },
-      { text: 'Haga el favor y compórtese', points: 6 },
-      { text: 'No meta la cucharada en la conversación', points: 5 },
-      { text: 'Eso no se hace delante de la gente', points: 4 },
-      { text: 'Recoja ese tiradero antes de que lleguen', points: 3 },
+      { text: 'Salúde a la señora', points: 8 },
+      { text: 'No moleste que tenemos visita', points: 6 },
+      { text: 'Vaya y cámbiese esa ropa', points: 4 },
+      { text: 'Haga el favor y compórtese', points: 2 },
     ],
   },
   {
@@ -45,13 +39,10 @@ const QUESTIONS = [
     question: '¿Qué dice una mamá cuando llegas tarde a la casa?',
     answers: [
       { text: '¿A qué horas es esto de llegar?', points: 10 },
-      { text: 'Lo tenía rezando el rosario', points: 9 },
-      { text: '¿Por qué no llamó?', points: 8 },
-      { text: 'Con usted no se puede contar', points: 7 },
-      { text: 'Ese teléfono es de adorno', points: 6 },
-      { text: 'Se quedó sin salida el próximo mes', points: 5 },
-      { text: 'Mañana me cuenta el cuento', points: 4 },
-      { text: 'Aquí no es un hotel', points: 3 },
+      { text: 'Lo tenía rezando el rosario', points: 8 },
+      { text: '¿Por qué no llamó?', points: 6 },
+      { text: 'Con usted no se puede contar', points: 4 },
+      { text: 'Ese teléfono es de adorno', points: 2 },
     ],
   },
   {
@@ -59,13 +50,10 @@ const QUESTIONS = [
     question: '¿Qué dice una mamá cuando no quieres comer?',
     answers: [
       { text: 'Hay niños que se mueren de hambre', points: 10 },
-      { text: 'Coma o no hay postre', points: 9 },
-      { text: '¿Acaso le parece que soy su sirvienta?', points: 8 },
-      { text: 'Pruebe aunque sea un poquito', points: 7 },
-      { text: 'Si no come no crece', points: 6 },
-      { text: 'No me venga con cuentos', points: 5 },
-      { text: 'Eso le va a gustar, no sea mañoso', points: 4 },
-      { text: 'Eso le mueve el estómago', points: 3 },
+      { text: 'Coma o no hay postre', points: 8 },
+      { text: '¿Acaso le parece que soy su sirvienta?', points: 6 },
+      { text: 'Pruebe aunque sea un poquito', points: 4 },
+      { text: 'Si no come no crece', points: 2 },
     ],
   },
   {
@@ -73,13 +61,10 @@ const QUESTIONS = [
     question: '¿Qué dice una mamá cuando pide algo y no lo haces de inmediato?',
     answers: [
       { text: '¿Cuántas veces le tengo que repetir?', points: 10 },
-      { text: 'Voy a contar hasta tres', points: 9 },
-      { text: 'No me haga perder la paciencia', points: 8 },
-      { text: '¿Qué espera, que le lloren los ojos?', points: 7 },
-      { text: '¡Ya!', points: 6 },
-      { text: 'Cuando yo era joven obedecía a la primera', points: 5 },
-      { text: 'Eso que hace es pereza pura', points: 4 },
-      { text: 'Se lo pido por las buenas o por las malas', points: 3 },
+      { text: 'Voy a contar hasta tres', points: 8 },
+      { text: 'No me haga perder la paciencia', points: 6 },
+      { text: '¿Qué espera, que le lloren los ojos?', points: 4 },
+      { text: '¡Ya!', points: 2 },
     ],
   },
 ];
@@ -91,10 +76,10 @@ function createInitialState() {
     revealedAnswers: [],
     strikes: 0,
     teams: [
-      { name: 'Equipo 1', score: 0 },
-      { name: 'Equipo 2', score: 0 },
-      { name: 'Equipo 3', score: 0 },
-      { name: 'Equipo 4', score: 0 },
+      { name: 'Equipo 1', score: 0, strikes: 0 },
+      { name: 'Equipo 2', score: 0, strikes: 0 },
+      { name: 'Equipo 3', score: 0, strikes: 0 },
+      { name: 'Equipo 4', score: 0, strikes: 0 },
     ],
     activeTeamIndex: 0,
     celebration: false,
@@ -144,19 +129,18 @@ wss.on('connection', ws => {
         break;
       }
       case 'ADD_STRIKE': {
-        if (gameState.strikes < 3) gameState.strikes++;
+        const team = gameState.teams[gameState.activeTeamIndex];
+        if (team.strikes < 3) team.strikes++;
         break;
       }
       case 'NEXT_TEAM': {
         gameState.activeTeamIndex = (gameState.activeTeamIndex + 1) % gameState.teams.length;
-        gameState.strikes = 0;
         break;
       }
       case 'SET_ACTIVE_TEAM': {
         const { teamIndex } = msg.payload;
         if (teamIndex >= 0 && teamIndex < gameState.teams.length) {
           gameState.activeTeamIndex = teamIndex;
-          gameState.strikes = 0;
         }
         break;
       }
@@ -165,7 +149,7 @@ wss.on('connection', ws => {
         if (questionId >= 0 && questionId < QUESTIONS.length) {
           gameState.currentQuestionIndex = questionId;
           gameState.revealedAnswers = [];
-          gameState.strikes = 0;
+          gameState.teams.forEach(t => { t.strikes = 0; });
           gameState.celebration = false;
           if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
         }
@@ -173,7 +157,7 @@ wss.on('connection', ws => {
       }
       case 'RESET_ROUND': {
         gameState.revealedAnswers = [];
-        gameState.strikes = 0;
+        gameState.teams.forEach(t => { t.strikes = 0; });
         gameState.celebration = false;
         if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
         break;
@@ -181,7 +165,7 @@ wss.on('connection', ws => {
       case 'NEXT_QUESTION': {
         gameState.currentQuestionIndex = (gameState.currentQuestionIndex + 1) % QUESTIONS.length;
         gameState.revealedAnswers = [];
-        gameState.strikes = 0;
+        gameState.teams.forEach(t => { t.strikes = 0; });
         gameState.celebration = false;
         if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
         break;
@@ -192,6 +176,7 @@ wss.on('connection', ws => {
           gameState.teams = teams.slice(0, 4).map((t, i) => ({
             name: (t.name || '').trim() || `Equipo ${i + 1}`,
             score: gameState.teams[i]?.score ?? 0,
+            strikes: gameState.teams[i]?.strikes ?? 0,
           }));
         }
         break;
@@ -215,7 +200,7 @@ wss.on('connection', ws => {
         if (celebrationTimeout) { clearTimeout(celebrationTimeout); celebrationTimeout = null; }
         const names = gameState.teams.map(t => t.name);
         gameState = createInitialState();
-        gameState.teams = names.map((name, i) => ({ name, score: 0 }));
+        gameState.teams = names.map(name => ({ name, score: 0, strikes: 0 }));
         break;
       }
     }

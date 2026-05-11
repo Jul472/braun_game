@@ -56,7 +56,7 @@ function renderStatus(state) {
   const q = state.questions[state.currentQuestionIndex];
   setText('status-question', `${state.currentQuestionIndex + 1} / ${state.questions.length}`);
   setText('status-team', state.teams[state.activeTeamIndex].name);
-  setText('status-strikes', `${state.strikes} / 3`);
+  setText('status-strikes', `${state.teams[state.activeTeamIndex].strikes} / 3`);
   const revealed = state.revealedAnswers.length;
   setText('status-revealed', `${revealed} / ${q.answers.length}`);
 }
@@ -109,8 +109,9 @@ function renderAnswers(state) {
 function renderStrikes(state) {
   const display = document.getElementById('strikes-display');
   if (!display) return;
+  const strikes = state.teams[state.activeTeamIndex].strikes;
   display.innerHTML = [0, 1, 2].map(i => `
-    <div class="h-strike ${i < state.strikes ? 'active' : ''}">✕</div>
+    <div class="h-strike ${i < strikes ? 'active' : ''}">✕</div>
   `).join('');
 }
 

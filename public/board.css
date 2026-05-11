@@ -113,11 +113,15 @@ main {
 .answers-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: clamp(5px, 0.8vw, 12px);
   min-height: 0;
 }
+
+/* 3 en fila 1 + 2 centradas en fila 2 */
+.answer-card:nth-child(-n+3) { grid-column: span 2; }
+.answer-card:nth-child(n+4)  { grid-column: span 3; }
 
 .answer-card {
   perspective: 1200px;
@@ -161,7 +165,7 @@ main {
 
 .card-number {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.5vw, 5.5rem);
+  font-size: clamp(2.5rem, 5.5vw, 7rem);
   color: rgba(255,255,255,0.85);
   line-height: 1;
 }
@@ -179,7 +183,7 @@ main {
 }
 
 .card-text {
-  font-size: clamp(0.75rem, 1.6vw, 1.5rem);
+  font-size: clamp(0.9rem, 1.9vw, 1.9rem);
   font-weight: 800;
   color: #1a1000;
   text-align: center;
@@ -190,7 +194,7 @@ main {
 
 .card-points {
   font-family: var(--font-display);
-  font-size: clamp(1rem, 2.2vw, 2.4rem);
+  font-size: clamp(1.2rem, 2.6vw, 3rem);
   color: rgba(0,0,0,0.5);
   line-height: 1;
   margin-top: 2px;
