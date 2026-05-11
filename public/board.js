@@ -151,12 +151,13 @@ function render(state) {
   // Strikes
   const activeStrikes = state.teams[state.activeTeamIndex].strikes;
   const prevStrikes = prev ? prev.teams[prev.activeTeamIndex].strikes : 0;
+  const teamChanged = prev && prev.activeTeamIndex !== state.activeTeamIndex;
   const strikeEls = document.querySelectorAll('.strike-mark');
   strikeEls.forEach((el, i) => {
     const wasActive = i < prevStrikes;
     const isActive = i < activeStrikes;
     el.classList.toggle('active', isActive);
-    if (isActive && !wasActive) {
+    if (!teamChanged && isActive && !wasActive) {
       el.classList.remove('flash');
       void el.offsetWidth; // reflow
       el.classList.add('flash');
